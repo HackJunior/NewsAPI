@@ -19,6 +19,9 @@ services:
       - "27017:27017"
     volumes:
       - mongodb_data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=AdminJunior
+      - MONGO_INITDB_ROOT_PASSWORD=yP6#8kz!WqT9vN3m
   
   vue_frontend:
     build:
