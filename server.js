@@ -32,10 +32,10 @@ const upload = multer({
 app.use(express.json());
 
 // Conexión a MongoDB
-mongoose.connect('mongodb://mongodb_server:27017/PortalNews')
+mongoose.connect('mongodb://AdminJunior:yP6%238kz%21WqT9vN3m@143.198.191.121:27017/PortalNews')
   .then(() => console.log('Connected to MongoDB'))
   .catch(err => console.error('Could not connect to MongoDB:', err));
-
+  
 
 // Ruta para obtener noticias por categoría
 app.get('/news', async (req, res) => {
@@ -65,6 +65,7 @@ app.get('/newsTag', async (req, res) => {
     const newsItems = await News.find({ tags });
     res.status(200).json(newsItems);
   } catch (err) {
+    console.log('error',err)
     res.status(500).json({ message: 'Error fetching news', error: err.message });
   }
 });

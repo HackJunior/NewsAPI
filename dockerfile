@@ -20,4 +20,5 @@ COPY . .
 EXPOSE 3000
 
 # Comando para iniciar la aplicación con nodemon
-CMD ["nodemon", "server.js"]
+CMD ["nodemon", "--watch", ".", "server.js"]
+
