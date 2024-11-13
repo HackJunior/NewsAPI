@@ -22,7 +22,7 @@ services:
   
   vue_frontend:
     build:
-      context: ../Portal News STE/portalnews/. 
+      context: ../portalnews/. 
       dockerfile: dockerfile
     container_name: vue-frontend-container
     ports:
