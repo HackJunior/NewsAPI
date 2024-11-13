@@ -1,0 +1,36 @@
+services:
+  api:
+    build:
+      context: .
+    container_name: news-api-container
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - uploads-data:/app/uploads 
+    depends_on:
+      - mongodb_server
+
+  mongodb_server:
+    image: mongo
+    container_name: mongodb_server
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+  
+  vue_frontend:
+    build:
+      context: ../Portal News STE/portalnews/. 
+      dockerfile: dockerfile
+    container_name: vue-frontend-container
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+
+volumes:
+  mongodb_data:
+  uploads-data:
+
