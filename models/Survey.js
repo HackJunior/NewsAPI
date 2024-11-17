@@ -3,7 +3,7 @@ const { Schema } = mongoose;
 
 const SurveySchema = new Schema({
     title: { type: String, required: true },
-    isActive: { type: Boolean, default: false }, 
+    isActive: { type: Boolean, default: true }, 
     yesVotes: { type: Number, default: 0 }, 
     noVotes: { type: Number, default: 0 },  
     createdAt: { type: Date, default: Date.now },

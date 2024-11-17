@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 
 
 const UserSchema = new mongoose.Schema({
-    user: { type: String, required: true, unique: true },
+    username: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     rol: { type: String, required: true, enum: ['admin', 'user', 'editor'], default: 'user' },
     correo: { type: String, required: true, unique: true },
@@ -24,6 +24,9 @@ UserSchema.pre('save', async function (next) {
 });
 
 UserSchema.methods.comparePassword = async function (candidatePassword) {
+    if (!candidatePassword || !this.password) {
+        throw new Error('Candidate password or hashed password is missing');
+    }
     return await bcrypt.compare(candidatePassword, this.password);
 };
 

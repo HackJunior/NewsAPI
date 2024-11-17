@@ -1,10 +1,11 @@
-const News = require('./models/News');
+const News = require('../models/News');
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 
 router.get('/news', async (req, res) => {
-  const { category, tags } = req.query;
-
+  const { category, tags } = req.body;
+  console.log('query',req.body);
   try {
     const filter = {};
     if (category) {
@@ -15,6 +16,7 @@ router.get('/news', async (req, res) => {
       const tagsArray = tags.split(','); 
       filter.tags = { $all: tagsArray }; 
     }
+    console.log('filter',filter)
 
   
     const newsItems = await News.find(filter);

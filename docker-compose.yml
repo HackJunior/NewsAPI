@@ -11,17 +11,18 @@ services:
       - uploads-data:/app/uploads 
     depends_on:
       - mongodb_server
+    command: nodemon --legacy-watch server.js
 
   mongodb_server:
-    image: mongo
+    image: mongo:latest
     container_name: mongodb_server
     ports:
       - "27017:27017"
     volumes:
       - mongodb_data:/data/db
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=AdminJunior
-      - MONGO_INITDB_ROOT_PASSWORD=yP6#8kz!WqT9vN3m
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
   
   vue_frontend:
     build:

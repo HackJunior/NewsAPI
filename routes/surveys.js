@@ -1,5 +1,5 @@
 const express = require('express');
-const Survey = require('./models/Survey'); // Importa el modelo de encuesta
+const Survey = require('../models/Survey'); // Importa el modelo de encuesta
 const router = express.Router();
 
 
@@ -69,5 +69,29 @@ router.post('/surveys/:id/vote', async (req, res) => {
     const result = await addVote(id, voteType);
     res.status(result.success ? 200 : 404).json(result);
 });
+router.post('/surveys', async (req, res) => {
+    const { title } = req.body;
+
+    if (!title) {
+        return res.status(400).json({ message: 'El título es obligatorio.' });
+    }
+    try {
+        // Desactivar cualquier survey activo
+        await Survey.updateMany({ isActive: true }, { isActive: false });
+
+        // Crear el nuevo survey (isActive será true por defecto)
+        const newSurvey = new Survey({ title });
+        await newSurvey.save();
+
+        res.status(201).json({
+            message: 'Survey creado con éxito.',
+            survey: newSurvey
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Error al crear el survey.' });
+    }
+});
+
 
 module.exports = router;

@@ -1,12 +1,14 @@
-const User = require('./models/Users');
+const User = require('../models/Users');
 const express = require('express');
 const router = express.Router();
 
 
 const createUser = async (userData) => {
-    const { user, password, rol, correo } = userData;
+    const { username, password, rol, correo } = userData;
+    console.log(userData);
+    console.log('username',username)
     try {
-        const newUser = new User({ user, password, rol, correo });
+        const newUser = new User({ username, password, rol, correo });
         await newUser.save();
         return { success: true, message: 'User created successfully', user: newUser };
     } catch (error) {
@@ -57,17 +59,14 @@ router.post('/users', async (req, res) => {
     const result = await createUser(req.body);
     res.status(result.success ? 201 : 400).json(result);
 });
-
 router.get('/users', async (req, res) => {
     const result = await getUsers();
     res.status(result.success ? 200 : 400).json(result);
 });
-
 router.get('/users/:id', async (req, res) => {
     const result = await getUserById(req.params.id);
     res.status(result.success ? 200 : 404).json(result);
 });
-
 router.put('/users/:id', async (req, res) => {
     const result = await updateUser(req.params.id, req.body);
     res.status(result.success ? 200 : 400).json(result);
