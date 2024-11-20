@@ -44,11 +44,12 @@ function authenticateAndRenewToken(req, res, next) {
     });
 }
 
-app.use('/api',authenticateAndRenewToken,imagen);
+
 app.use('/api',login);
 app.use('/api',authenticateAndRenewToken ,news);
 app.use('/api',authenticateAndRenewToken ,survey);
 app.use('/api',authenticateAndRenewToken ,users);
+app.use('/api',authenticateAndRenewToken,imagen);
 
 
 app.use('/api', authenticateAndRenewToken, (req, res) => {

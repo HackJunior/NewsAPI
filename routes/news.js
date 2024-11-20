@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 
 router.get('/news', async (req, res) => {
   const { category, tags } = req.body;
-  console.log('query',req.body);
+
   try {
     const filter = {};
     if (category) {
@@ -101,5 +101,47 @@ router.delete('/news/:id', async (req, res) => {
     res.status(500).json({ message: 'Error deleting news', error: err.message });
   }
 });
+router.put('/news/:id/read', async (req, res) => {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid ID format' });
+    } 
+
+    try {
+        const result = await News.updateOne(
+            { _id: id }, 
+            { $inc: { timesreaded: 1 } }
+        );
+
+        if (result.modifiedCount === 0) {
+            return res.status(404).json({ message: 'Article not found' });
+        }
+
+        res.json({ message: 'Article read count updated successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error updating article read count' });
+    }
+});
+router.post('/news/top', async (req, res) => {
+    const { limit=6,days=3} = req.body; 
+    try {
+        const dateLimit = new Date();
+        dateLimit.setDate(dateLimit.getDate() - days);
+
+        const topArticles = await News.find({
+        createdAt: { $gte: dateLimit }, 
+        })
+        .sort({ timesreaded: -1 }) 
+        .limit(limit); 
+
+        res.json(topArticles);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error fetching top articles' });
+    }
+});
+
 
 module.exports = router;
