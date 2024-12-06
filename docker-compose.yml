@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   api:
     build:
@@ -8,7 +10,7 @@ services:
     volumes:
       - .:/app
       - /app/node_modules
-      - uploads-data:/app/uploads 
+      - uploads-data:/app/uploads
     depends_on:
       - mongodb_server
     command: nodemon --legacy-watch server.js
@@ -23,7 +25,7 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
-  
+
   vue_frontend:
     build:
       context: ../portalnews/. 
@@ -33,8 +35,18 @@ services:
       - "80:80"
     depends_on:
       - api
+    volumes:
+      - ./certs:/etc/letsencrypt
+      - ./nginx-challenges:/var/www/certbot
+
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - ./certs:/etc/letsencrypt
+      - ./nginx-challenges:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do sleep 12h & wait $!; certbot renew; done'"
 
 volumes:
   mongodb_data:
   uploads-data:
-

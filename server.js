@@ -13,19 +13,17 @@ const login = require('./routes/login');
 const app = express();
 require('dotenv').config();
 
-// Middleware para solicitudes preflight
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use(express.json());
+
 app.use(cors({
-    origin: 'http://localhost', // Cambiar a '*' si necesitas permitir todos los orígenes
+    origin: 'http://localhost',
     methods: 'GET,POST,PUT,DELETE,OPTIONS',
     allowedHeaders: 'Content-Type,Authorization',
-    credentials: true, // Si necesitas enviar cookies o encabezados de autenticación
+    credentials: true, 
 }));
 
 app.options('*', cors()); // Manejo explícito de solicitudes OPTIONS
-
-// Middleware para solicitudes estáticas
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-app.use(express.json());
 
 // Middleware de logging
 app.use((req, res, next) => {
@@ -47,6 +45,7 @@ function generateToken(username) {
 function authenticateAndRenewToken(req, res, next) {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
+    console.log('here');
 
     if (!token) return res.status(401).json({ message: 'Token no proporcionado' });
 
@@ -67,10 +66,10 @@ function authenticateAndRenewToken(req, res, next) {
 
 // Rutas
 app.use('/api', login);
-app.use('/api', authenticateAndRenewToken, news);
-app.use('/api', authenticateAndRenewToken, survey);
-app.use('/api', authenticateAndRenewToken, users);
-app.use('/api', authenticateAndRenewToken, imagen);
+app.use('/api', news);
+app.use('/api', survey);
+app.use('/api', users);
+app.use('/api', imagen);
 
 // Conexión a MongoDB
 mongoose.connect(`mongodb://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_DATABASE}?authSource=admin`)

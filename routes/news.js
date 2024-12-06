@@ -4,21 +4,35 @@ const router = express.Router();
 const mongoose = require('mongoose');
 
 router.get('/news', async (req, res) => {
-  const { category, tags } = req.body;
+  const { category, tags, id } = req.query;
+  console.log(req.query)
 
   try {
     const filter = {};
+
+    // Si se proporciona un ID, se utiliza para buscar una noticia específica
+    if (id) {
+      const newsItem = await News.findById(id);
+      if (!newsItem) {
+        return res.status(404).json({ message: 'News not found' });
+      }
+      return res.status(200).json(newsItem);
+    }
+
+    // Filtro por categoría
     if (category) {
       filter.category = category;
     }
 
+    // Filtro por etiquetas
     if (tags) {
       const tagsArray = tags.split(','); 
       filter.tags = { $all: tagsArray }; 
     }
-    console.log('filter',filter)
 
-  
+    console.log('filter', filter);
+
+    // Buscar noticias con los filtros proporcionados
     const newsItems = await News.find(filter);
     res.status(200).json(newsItems);
 
@@ -26,9 +40,27 @@ router.get('/news', async (req, res) => {
     res.status(500).json({ message: 'Error fetching news', error: err.message });
   }
 });
+
+router.get('/news/top', async (req, res) => {
+    const { limit=6,days=3} = req.body; 
+    try {
+        const dateLimit = new Date();
+        dateLimit.setDate(dateLimit.getDate() - days);
+
+        const topArticles = await News.find({
+        createdAt: { $gte: dateLimit }, 
+        })
+        .sort({ timesreaded: -1 }) 
+        .limit(limit); 
+
+        res.json(topArticles);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error fetching top articles' });
+    }
+});
 router.post('/news', async (req, res) => {
   const { title, content, category, image, tags } = req.body;
-  console.log(req.body);
 
   // Validación simple
   if (!title || !content || !category || !image || !tags) {
@@ -80,27 +112,6 @@ router.put('/news/:id', async (req, res) => {
     res.status(500).json({ message: 'Error updating news', error: err.message });
   }
 });
-router.delete('/news/:id', async (req, res) => {
-  const { id } = req.params;
-
-  // Validar formato del ID
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({ message: 'Invalid ID format' });
-  }
-
-  try {
-    // Buscar y eliminar la noticia
-    const deletedNews = await News.findByIdAndDelete(id);
-
-    if (!deletedNews) {
-      return res.status(404).json({ message: 'News item not found' });
-    }
-
-    res.status(200).json({ message: 'News deleted successfully' });
-  } catch (err) {
-    res.status(500).json({ message: 'Error deleting news', error: err.message });
-  }
-});
 router.put('/news/:id/read', async (req, res) => {
     const { id } = req.params;
 
@@ -124,24 +135,28 @@ router.put('/news/:id/read', async (req, res) => {
         res.status(500).json({ message: 'Error updating article read count' });
     }
 });
-router.post('/news/top', async (req, res) => {
-    const { limit=6,days=3} = req.body; 
-    try {
-        const dateLimit = new Date();
-        dateLimit.setDate(dateLimit.getDate() - days);
+router.delete('/news/:id', async (req, res) => {
+  const { id } = req.params;
 
-        const topArticles = await News.find({
-        createdAt: { $gte: dateLimit }, 
-        })
-        .sort({ timesreaded: -1 }) 
-        .limit(limit); 
+  // Validar formato del ID
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ message: 'Invalid ID format' });
+  }
 
-        res.json(topArticles);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Error fetching top articles' });
+  try {
+    // Buscar y eliminar la noticia
+    const deletedNews = await News.findByIdAndDelete(id);
+
+    if (!deletedNews) {
+      return res.status(404).json({ message: 'News item not found' });
     }
+
+    res.status(200).json({ message: 'News deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Error deleting news', error: err.message });
+  }
 });
+
 
 
 module.exports = router;

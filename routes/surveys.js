@@ -15,6 +15,7 @@ const getActiveSurveyWithResults = async () => {
         return {
             success: true,
             survey: {
+                id: survey._id,
                 title: survey.title,
                 yesVotes: survey.yesVotes,
                 noVotes: survey.noVotes,
@@ -60,8 +61,11 @@ router.get('/surveys', async (req, res) => {
     const result = await getAllSurveys();
     res.status(result.success ? 200 : 500).json(result);
 });
-router.post('/surveys/:id/vote', async (req, res) => {
-    const { id } = req.params;
+router.post('/surveys/vote', async (req, res) => {
+    //const { id } = req.params;
+    const surveyActive = await getActiveSurveyWithResults();
+    const id = surveyActive.survey.id;
+
     const { voteType } = req.body; 
     if (!['yes', 'no'].includes(voteType)) {
         return res.status(400).json({ success: false, message: 'Invalid vote type' });
