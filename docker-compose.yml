@@ -35,6 +35,9 @@ services:
       - "80:80"
     depends_on:
       - api
+
+
+      
     # volumes:
     #   - ./certs:/etc/letsencrypt
     #   - ./nginx-challenges:/var/www/certbot
