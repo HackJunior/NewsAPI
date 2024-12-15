@@ -33,7 +33,7 @@ router.get('/news', async (req, res) => {
     console.log('filter', filter);
 
     // Buscar noticias con los filtros proporcionados
-    const newsItems = await News.find(filter);
+    const newsItems = await News.find(filter).sort({ createdAt: -1 });
     res.status(200).json(newsItems);
 
   } catch (err) {
@@ -59,6 +59,7 @@ router.get('/news/top', async (req, res) => {
         res.status(500).json({ message: 'Error fetching top articles' });
     }
 });
+  
 router.post('/news', async (req, res) => {
   const { title, content, category, image, tags } = req.body;
 
