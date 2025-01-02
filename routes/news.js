@@ -4,13 +4,12 @@ const router = express.Router();
 const mongoose = require('mongoose');
 
 router.get('/news', async (req, res) => {
-  const { category, tags, id } = req.query;
+  const { category, tags, id,urlIdTitle } = req.query;
   console.log(req.query)
 
   try {
     const filter = {};
 
-    // Si se proporciona un ID, se utiliza para buscar una noticia específica
     if (id) {
       const newsItem = await News.findById(id);
       if (!newsItem) {
@@ -24,6 +23,10 @@ router.get('/news', async (req, res) => {
       filter.category = category;
     }
 
+    if (urlIdTitle) {
+      filter.urlIdTitle = urlIdTitle;
+    }
+  
     // Filtro por etiquetas
     if (tags) {
       const tagsArray = tags.split(','); 
