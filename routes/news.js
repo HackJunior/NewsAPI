@@ -78,8 +78,17 @@ router.post('/news', async (req, res) => {
       }
     }
 
-    // Crea el nuevo documento y guarda en la colección
-    const newNews = new News({ title, content, category, image, tags });
+    const urlIdTitle = title
+      .replace(/ /g, '-') 
+      .toLowerCase()
+      .replace('ñ', 'n') 
+      .replace(/[áàäâ]/g, 'a') 
+      .replace(/[éèëê]/g, 'e') 
+      .replace(/[íìïî]/g, 'i')
+      .replace(/[óòöô]/g, 'o') 
+      .replace(/[úùüû]/g, 'u'); 
+
+    const newNews = new News({ title, content, category, image, tags,urlIdTitle });
     await newNews.save();
 
     res.status(201).json({ message: 'News created successfully', news: newNews });
