@@ -45,7 +45,7 @@ router.get('/news', async (req, res) => {
 });
 
 router.get('/news/top', async (req, res) => {
-    const { limit=6,days=3} = req.body; 
+    const { limit=6,days=7} = req.body; 
     try {
         const dateLimit = new Date();
         dateLimit.setDate(dateLimit.getDate() - days);
