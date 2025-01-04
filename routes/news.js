@@ -2,6 +2,7 @@ const News = require('../models/News');
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
+const Reporter = require('../models/reporter');
 
 router.get('/news', async (req, res) => {
   const { category, tags, id,urlIdTitle } = req.query;
@@ -44,6 +45,17 @@ router.get('/news', async (req, res) => {
   }
 });
 
+router.get('/news/recent',async(req,res)=>{ 
+  try {
+      const recentNews = await News.find().sort({ createdAt: -1 }).limit(3);
+
+      res.status(200).json(recentNews);
+    } catch (error) {
+        console.error('Error fetching recent news:', error);
+        res.status(500).json({ message: 'Error fetching recent news' });
+    }
+})
+
 router.get('/news/top', async (req, res) => {
     const { limit=6,days=7} = req.body; 
     try {
@@ -64,14 +76,19 @@ router.get('/news/top', async (req, res) => {
 });
   
 router.post('/news', async (req, res) => {
-  const { title, content, category, image, tags } = req.body;
+  const { title, content, category, image, tags, imagePerfil, reporterId } = req.body;
 
   // Validación simple
-  if (!title || !content || !category || !image || !tags) {
-    return res.status(400).json({ message: 'Title, content, category, image, and tags are required' });
+  if (!title || !content || !category || !image || !tags || !reporterId) {
+    return res.status(400).json({ message: 'Title, content, category, image, tags, and reporterId are required' });
   }
 
   try {
+    const reporter = await Reporter.findById(reporterId);
+    if (!reporter) {
+      return res.status(404).json({ message: 'Reporter not found' });
+    }
+
     if (tags.includes("Portada")) {
       const existingPortada = await News.findOne({ tags: "Portada" });
       
@@ -91,7 +108,7 @@ router.post('/news', async (req, res) => {
       .replace(/[óòöô]/g, 'o') 
       .replace(/[úùüû]/g, 'u'); 
 
-    const newNews = new News({ title, content, category, image, tags,urlIdTitle });
+    const newNews = new News({ title, content, category, image, tags, urlIdTitle, imagePerfil, reporter: reporterId });
     await newNews.save();
 
     res.status(201).json({ message: 'News created successfully', news: newNews });

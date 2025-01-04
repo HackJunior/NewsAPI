@@ -9,6 +9,7 @@ const news = require('./routes/news');
 const survey = require('./routes/surveys');
 const users = require('./routes/users');
 const login = require('./routes/login');
+const reporter = require('./routes/reporter');
 
 const app = express();
 require('dotenv').config();
@@ -67,6 +68,7 @@ function authenticateAndRenewToken(req, res, next) {
 // Rutas
 app.use('/api', login);
 app.use('/api', news);
+app.use('/api', reporter);
 app.use('/api', survey);
 app.use('/api', users);
 app.use('/api', imagen);
