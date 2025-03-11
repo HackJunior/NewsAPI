@@ -37,8 +37,8 @@
       depends_on:
         - api
       restart: always
-    #   volumes:
-    #     - ./certs:/etc/letsencrypt
+      volumes:
+        - ./certs:/etc/letsencrypt
     #     - ./nginx-challenges:/var/www/certbot
 
     # certbot:
