@@ -118,7 +118,7 @@ router.post('/news', async (req, res) => {
 });
 router.put('/news/:id', async (req, res) => {
   const { id } = req.params;
-  const { title, category, tags, content, image } = req.body;
+  const { title, category, tags, content } = req.body;
 
   // Validar formato del ID
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -129,7 +129,7 @@ router.put('/news/:id', async (req, res) => {
     // Buscar y actualizar la noticia
     const updatedNews = await News.findByIdAndUpdate(
       id,
-      { title, category, tags, content, image },
+      { title, category, tags, content },
       { new: true, runValidators: true }
     );
 

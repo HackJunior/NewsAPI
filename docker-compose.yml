@@ -1,53 +1,55 @@
-version: '3.8'
+  version: '3.8'
 
-services:
-  api:
-    build:
-      context: .
-    container_name: news-api-container
-    ports:
-      - "3000:3000"
-    volumes:
-      - .:/app
-      - /app/node_modules
-      - uploads-data:/app/uploads
-    depends_on:
-      - mongodb_server
-    command: nodemon --legacy-watch server.js
+  services:
+    api:
+      build:
+        context: .
+      container_name: news-api-container
+      ports:
+        - "3000:3000"
+      volumes:
+        - .:/app
+        - /app/node_modules
+        - newsapi_uploads-data:/app/uploads
+      depends_on:
+        - mongodb_server
+      command: nodemon --legacy-watch server.js
 
-  mongodb_server:
-    image: mongo:latest
-    container_name: mongodb_server
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongodb_data:/data/db
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    mongodb_server:
+      image: mongo:latest
+      container_name: mongodb_server
+      ports:
+        - "27017:27017"
+      volumes:
+        - newsapi_mongodb_data:/data/db
+      environment:
+        MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+        MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
 
-  vue_frontend:
-    build:
-      context: ../portalnews/. 
-      dockerfile: dockerfile
-    container_name: vue-frontend-container
-    ports:
-      - "80:80"
-      - "443:443"
-    depends_on:
-      - api
-  #   volumes:
-  #     - ./certs:/etc/letsencrypt
-  #     - ./nginx-challenges:/var/www/certbot
+    vue_frontend:
+      build:
+        context: ../portalnews/. 
+        dockerfile: dockerfile
+      container_name: vue-frontend-container
+      ports:
+        - "80:80"
+        - "443:443"
+      depends_on:
+        - api
+      volumes:
+        - ./certs:/etc/letsencrypt
+      restart: always
 
-  # certbot:
-  #   image: certbot/certbot
-  #   container_name: certbot
-  #   volumes:
-  #     - ./certs:/etc/letsencrypt
-  #     - ./nginx-challenges:/var/www/certbot
-  #   entrypoint: "/bin/sh -c 'trap exit TERM; while :; do sleep 12h & wait $!; certbot renew; done'"
+    # certbot:
+    #   image: certbot/certbot
+    #   container_name: certbot
+    #   volumes:
+    #     - ./certs:/etc/letsencrypt
+    #     - ./nginx-challenges:/var/www/certbot
+    #   entrypoint: "/bin/sh -c 'trap exit TERM; while :; do sleep 12h & wait $!; certbot renew; done'"
 
-volumes:
-  mongodb_data:
-  uploads-data:
+  volumes:
+    newsapi_uploads-data:
+      external: true
+    newsapi_mongodb_data:
+      external: true
