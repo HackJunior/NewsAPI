@@ -36,9 +36,10 @@
         - "443:443"
       depends_on:
         - api
-      volumes:
-        - ./certs:/etc/letsencrypt
       restart: always
+    #   volumes:
+    #     - ./certs:/etc/letsencrypt
+    #     - ./nginx-challenges:/var/www/certbot
 
     # certbot:
     #   image: certbot/certbot
