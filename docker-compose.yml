@@ -38,7 +38,7 @@
         - api
       restart: always
       volumes:
-        - ./certs:/etc/letsencrypt
+        - /etc/letsencrypt:/etc/letsencrypt:ro
     #     - ./nginx-challenges:/var/www/certbot
 
     # certbot:
